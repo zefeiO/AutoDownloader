@@ -4,8 +4,8 @@ chrome.runtime.onMessage.addListener(
         var videoUrls = [];
         var video = document.getElementById("video"+index);
         while(video){
-            console.log(video.innerHTML);
-            videoUrls.push(video.innerHTML);
+            console.log(video.textContent);
+            videoUrls.push(video.textContent);
             index++;
             video = document.getElementById("video"+index);
         }
@@ -13,9 +13,11 @@ chrome.runtime.onMessage.addListener(
         var res;
         for(var i = 0; i < videoUrls.length; i++){
             const xhr = new XMLHttpRequest();
-            xhr.open("GET", videoUrls[i]);
+            xhr.open("GET", videoUrls[i], false);
+            xhr.onprogress = function(pe){
+                alert("Downloading");
+            };
             xhr.onload = function(){
-                console.log("Downloading");
                 res = xhr.response;
             };
             xhr.send();
@@ -23,7 +25,7 @@ chrome.runtime.onMessage.addListener(
                 break;
             }
         }
-
+        
         const filename = "video.mp4";
         var blob = new Blob([res], {type: "video/mp4"});
         const blobUrl = window.URL.createObjectURL(blob);
